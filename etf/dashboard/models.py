@@ -11,6 +11,9 @@ class Client(models.Model):
     email = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=30)
 
+    def __str__():
+        return f"{self.first_name} {self.second_name}"
+
 
 class Employee(models.Model):
     first_name = models.CharField(max_length=100)
@@ -25,6 +28,9 @@ class Employee(models.Model):
     role = models.CharField(max_length=50)
     salary = models.IntegerField()
 
+    def __str__():
+        return f"{self.first_name} {self.second_name}"
+
 
 class Consultation(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.DO_NOTHING)
@@ -33,6 +39,9 @@ class Consultation(models.Model):
     duration = models.SmallIntegerField()
     cost = models.IntegerField()
 
+    def __str__():
+        return f"{self.employee} consulted {self.client} on {self.date}"
+
 
 class ETF(models.Model):
     id = models.CharField(max_length=4, primary_key=True)
@@ -40,6 +49,9 @@ class ETF(models.Model):
     exchange = models.CharField(max_length=50)
     ipo_date = models.DateField()
     status = models.CharField(max_length=50)
+
+    def __str__():
+        return f"{id}"
 
 
 class Timestamp(models.Model):
@@ -51,6 +63,9 @@ class Timestamp(models.Model):
     close = models.FloatField()
     volume = models.IntegerField()
 
+    def __str__():
+        return f"{self.etf} {self.timestamp}"
+
 
 class Transaction(models.Model):
     client = models.ForeignKey(Client, on_delete=models.DO_NOTHING)
@@ -60,9 +75,15 @@ class Transaction(models.Model):
     amount = models.IntegerField()
     frequency = models.CharField(max_length=20)
 
+    def __str__():
+        return f"{self.client} bought {self.etf} of {self.date}"
+
 
 class Cost(models.Model):
     date = models.DateField()
     cost = models.FloatField()
     reason = models.CharField(max_length=50)
     target = models.CharField(max_length=24)
+
+    def __str__():
+        return f"{self.reason} cost {self.cost} on {self.date}"

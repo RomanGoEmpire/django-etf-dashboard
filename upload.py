@@ -7,7 +7,7 @@ import pandas as pd
 
 def get_df(file, sep=";"):
     return pd.read_csv(
-        f"C:/Users/gerlo/CORE/3 Programming/PycharmProjects/etf_database/data/{file}.csv",
+        f"data/{file}.csv",
         sep=sep,
     )
 
@@ -88,9 +88,9 @@ def upload_consulation():
 
 
 def upload_ETF():
-    df = get_df("listing_status")
     table = "etf"
     table_name = f"dashboard_{table}"
+    df = get_df(table)
 
     cursor.execute(f"DELETE FROM {table_name}")
     for _, row in df.iterrows():
@@ -109,9 +109,9 @@ def upload_ETF():
 
 
 def upload_timestamp():
-    df = get_df("timestamps", sep=",")
     table = "timestamp"
     table_name = f"dashboard_{table}"
+    df = get_df(table)
 
     cursor.execute(f"DELETE FROM {table_name}")
     for _, row in df.iterrows():

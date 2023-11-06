@@ -1,0 +1,6 @@
+id;first_name;last_name;birthday;gender;email;phone_number;hire_date;role;salary
+0;Heidi;Schmidt;1995-07-21;female;heidi.schmidt@web.de;+49 146 5462231;2022-12-14;ETF Consultant;36000.0
+1;Bernd;Koch;1999-10-29;male;bernd.koch@t-online.de;+49 135 4305710;2021-10-28;ETF Consultant;60800.0
+2;Valentin;Schäfer;1971-03-15;male;valentin.schäfer@outlook.com;+49 163 9131587;2015-11-11;ETF Consultant;42400.0
+3;Paul;Meyer;1972-08-03;male;paul.meyer@google.com;+49 170 7234306;2022-02-16;ETF Specialist;51000.0
+4;Caroline;Wagner;2001-07-31;female;caroline.wagner@web.de;+49 191 4469593;2018-03-27;Marketing Specialist;61200.0
