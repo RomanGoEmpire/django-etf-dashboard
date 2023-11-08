@@ -23,8 +23,9 @@ def upload_client():
     cursor.execute(f"DELETE FROM {table_name}")
     for _, row in df.iterrows():
         cursor.execute(
-            f"INSERT INTO {table_name} (first_name,last_name,gender,adress,country,email,phone_number,birthday) VALUES (?,?,?,?,?,?,?,?)",
+            f"INSERT INTO {table_name} (id,first_name,last_name,gender,adress,country,email,phone_number,birthday) VALUES (?,?,?,?,?,?,?,?,?)",
             (
+                row["id"],
                 row["first_name"],
                 row["last_name"],
                 row["gender"],
@@ -49,8 +50,9 @@ def upload_employee():
     cursor.execute(f"DELETE FROM {table_name}")
     for _, row in df.iterrows():
         cursor.execute(
-            f"INSERT INTO {table_name}  (first_name,last_name,birthday,gender,email,phone_number,hire_date,role,salary) VALUES (?,?,?,?,?,?,?,?,?)",
+            f"INSERT INTO {table_name}  (id,first_name,last_name,birthday,gender,email,phone_number,hire_date,role,salary) VALUES (?,?,?,?,?,?,?,?,?,?)",
             (
+                row["id"],
                 row["first_name"],
                 row["last_name"],
                 row["birthday"],
@@ -74,8 +76,9 @@ def upload_consulation():
     cursor.execute(f"DELETE FROM {table_name}")
     for _, row in df.iterrows():
         cursor.execute(
-            f"INSERT INTO {table_name}  (employee_id,client_id,date,duration,cost) VALUES (?,?,?,?,?)",
+            f"INSERT INTO {table_name}  (id,employee_id,client_id,date,duration,revenue) VALUES (?,?,?,?,?,?)",
             (
+                row["id"],
                 row["employee_id"],
                 row["client_id"],
                 row["date"],
@@ -136,6 +139,12 @@ def upload_transaction():
     table_name = f"dashboard_{table}"
     df = get_df(table)
 
+    # if option is sell change amount to negative
+    df["amount"] = df.apply(
+        lambda row: row["amount"] * -1 if row["type"] == "sell" else row["amount"],
+        axis=1,
+    )
+
     cursor.execute(f"DELETE FROM {table_name}")
     for _, row in df.iterrows():
         cursor.execute(
@@ -175,10 +184,29 @@ def upload_cost():
 
 conn = sqlite3.connect("etf/db.sqlite3")
 cursor = conn.cursor()
-upload_client()
-upload_employee()
-upload_consulation()
-upload_ETF()
-upload_timestamp()
+# upload_client()
+# upload_employee()
+# upload_consulation()
+# upload_ETF()
+# upload_timestamp()
 upload_transaction()
-upload_cost()
+# upload_cost()
+
+
+# get all transactions. If option is sell change amount to negative
+# cursor.execute(
+#     """
+#     SELECT * FROM dashboard_transaction WHERE option = 'sell'
+#     """
+# )
+# transactions = cursor.fetchall()
+# print(transactions)
+# # the amount is a interger
+# for transaction in transactions:
+#     cursor.execute(
+#         f"""
+#         UPDATE dashboard_transaction SET amount = ? WHERE id = ?
+#         """,
+#         (transaction[4] * -1, transaction[0]),
+#     )
+# conn.commit()

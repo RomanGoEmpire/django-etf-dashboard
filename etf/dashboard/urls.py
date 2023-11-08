@@ -1,7 +1,13 @@
 from django.urls import path
 
-from . import views
+from .views import *
 
 urlpatterns = [
-    path("", views.index, name="index"),
+    path("", index, name="index"),
+    path("revenue/", RevenueView.as_view(), name="revenue"),
+    path(
+        "consultation_count_by_duration/",
+        ConsultationCountByDurationView.as_view(),
+        name="consultation_count_by_duration",
+    ),
 ]
