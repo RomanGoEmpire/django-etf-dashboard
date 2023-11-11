@@ -4,10 +4,12 @@ from .views import *
 
 urlpatterns = [
     path("", index, name="index"),
-    path("revenue/", RevenueView.as_view(), name="revenue"),
+    path("total_revenue", total_revenue, name="total_revenue"),
+    path("total_cost", total_cost, name="total_cost"),
+    path("total_profit", total_profit, name="total_profit"),
     path(
-        "consultation_count_by_duration/",
-        ConsultationCountByDurationView.as_view(),
-        name="consultation_count_by_duration",
+        "total_cost_revenue_profit",
+        total_cost_revenue_profit,
+        name="total_cost_revenue_profit",
     ),
 ]

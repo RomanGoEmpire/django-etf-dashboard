@@ -83,7 +83,7 @@ def upload_consulation():
                 row["client_id"],
                 row["date"],
                 row["duration"],
-                row["cost"],
+                row["revenue"],
             ),
         )
     conn.commit()
@@ -184,13 +184,13 @@ def upload_cost():
 
 conn = sqlite3.connect("etf/db.sqlite3")
 cursor = conn.cursor()
-# upload_client()
-# upload_employee()
-# upload_consulation()
-# upload_ETF()
-# upload_timestamp()
+upload_client()
+upload_employee()
+upload_consulation()
+upload_ETF()
+upload_timestamp()
 upload_transaction()
-# upload_cost()
+upload_cost()
 
 
 # get all transactions. If option is sell change amount to negative

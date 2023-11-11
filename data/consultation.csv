@@ -1,4 +1,4 @@
-id;employee_id;client_id;date;duration;cost
+id;employee_id;client_id;date;duration;revenue
 0;1;26;2019-03-01;1;100
 1;0;4822;2020-10-07;1;100
 2;1;3586;2022-06-12;3;270

@@ -78,6 +78,12 @@ class Consultation(models.Model):
     def revenue_by_interval(cls, interval):
         return aggregate_by_interval(cls, interval, "revenue")
 
+    @classmethod
+    def total_revenue(cls):
+        return (
+            round(float(cls.objects.aggregate(Sum("revenue"))["revenue__sum"]), 2) or 0
+        )
+
     def __str__(self):
         return f"{self.employee} consulted {self.client} on {self.date}"
 
@@ -177,7 +183,7 @@ class Cost(models.Model):
 
     @classmethod
     def total_costs(cls):
-        return cls.objects.aggregate(Sum("cost"))["cost__sum"] or 0
+        return round(cls.objects.aggregate(Sum("cost"))["cost__sum"], 2) or 0
 
     @classmethod
     def cost_breakdown(cls):
@@ -189,29 +195,29 @@ class Cost(models.Model):
 
 
 class Company(models.Model):
-    total_revenue = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    profit = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
 
     @classmethod
-    def update_total_revenue(cls):
+    def update_total_profit(cls):
         total_costs = Cost.objects.aggregate(Sum("cost"))["cost__sum"] or 0
         total_revenue = (
             Consultation.objects.aggregate(Sum("revenue"))["revenue__sum"] or 0
         )
         company = cls.objects.first()  # assuming there's only one Company object
-        company.total_revenue = total_revenue - total_costs
+        company.profit = total_revenue - total_costs
         company.save()
-        return company.total_revenue
+        return company.profit
 
     @classmethod
-    def revenue(cls):
-        cls.update_total_revenue()
-        return cls.objects.first().total_revenue
+    def total_profit(cls):
+        cls.update_total_profit()
+        return round(float(cls.objects.first().profit), 2)
 
 
 @receiver([post_save, post_delete], sender=Cost)
 @receiver([post_save, post_delete], sender=Consultation)
 def update_company_total_revenue(sender, **kwargs):
-    Company.update_total_revenue()
+    Company.update_total_profit()
 
 
 def aggregate_by_interval(cls, interval, field):
