@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Count, Sum
 from django.db.models.functions import TruncMonth, TruncQuarter, TruncYear
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
@@ -64,15 +64,29 @@ class Consultation(models.Model):
 
     @classmethod
     def consultation_count_by_duration(cls):
-        consultations = cls.objects.all()
-        duration_counts = {}
-        for consultation in consultations:
-            duration = consultation.duration
-            if duration in duration_counts:
-                duration_counts[duration] += 1
-            else:
-                duration_counts[duration] = 1
-        return duration_counts
+        queryset = (
+            cls.objects.values("duration")
+            .annotate(total=Count("id"))
+            .order_by("-total")
+        )
+        return {item["duration"]: item["total"] for item in queryset}
+
+    @classmethod
+    def consultation_count_by_employee(cls):
+        queryset = (
+            cls.objects.values("employee__first_name", "employee__last_name")
+            .annotate(total=Count("id"))
+            .order_by("-total")
+        )
+        return {
+            f"{item['employee__first_name']} {item['employee__last_name']}": item[
+                "total"
+            ]
+            for item in queryset
+        }
+
+    def __str__(self):
+        return f"{self.employee} consulted {self.client} on {self.date}"
 
     @classmethod
     def revenue_by_interval(cls, interval):
@@ -156,20 +170,28 @@ class Transaction(models.Model):
         return frequency_count
 
     @classmethod
-    def get_total_volume_per_client(cls):
-        # group by client_id and sum amount
-        return (
-            cls.objects.values("client_id")
+    def get_volume_per_etf(cls):
+        # group by etf and sum amount
+        volume_per_etf = cls.objects.values("etf_id").annotate(total=Sum("amount"))
+        # convert to dict
+        return {item["etf_id"]: item["total"] for item in volume_per_etf}
+
+    @classmethod
+    def get_volume_client(cls):
+        # group by client and sum amount
+        volume_per_client = (
+            cls.objects.values("client__first_name", "client__last_name")
             .annotate(total=Sum("amount"))
             .order_by("-total")
         )
+        # convert to dict
+        return {
+            f"{item['client__first_name']} {item['client__last_name']}": item["total"]
+            for item in volume_per_client
+        }
 
     def __str__(self):
         return f"{self.client} bought {self.etf} of {self.date}"
-
-    @classmethod
-    def total_transactions(cls):
-        return cls.objects.count()
 
 
 class Cost(models.Model):
@@ -247,7 +269,7 @@ def aggregate_by_interval(cls, interval, field):
     )
 
     for data in data_by_date:
-        data_by_interval[data["date_trunc"]] = data["total"]
+        data_by_interval[str(data["date_trunc"])] = data["total"]
 
     return data_by_interval
 

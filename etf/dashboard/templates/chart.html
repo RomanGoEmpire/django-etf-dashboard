@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <canvas id="myChart"></canvas>
+    <script>
+var ctx = document.getElementById('myChart').getContext('2d');
+var data = JSON.parse('{{ data | safe }}');
+var values = Object.values(data);
+
+// Group the clients into 100 groups
+var groupSize = Math.ceil(values.length / 100);
+var groupedValues = [];
+for (var i = 0; i < values.length; i += groupSize) {
+    var group = values.slice(i, i + groupSize);
+    var average = group.reduce((a, b) => a + b, 0) / group.length; // Calculate average
+    groupedValues.push(average);
+}
+
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: Array(groupedValues.length).fill(''), // Empty labels
+        datasets: [{
+            label: 'Average Volume per Client Group',
+            data: groupedValues,
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        plugins: {
+            title: {
+                display: true,
+                text: 'Average Volume per Client Group'
+            }
+        },
+        scales: {
+            x: {
+                ticks: {
+                    display: false // Hide x-axis labels
+                },
+                grid: {
+                    display: false // Hide y-axis gridlines
+                }
+            },
+            y: {
+                beginAtZero: true,
+                
+            }
+        }
+    }
+});
+    </script>
+</body>
+</html>
