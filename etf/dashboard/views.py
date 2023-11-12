@@ -56,7 +56,10 @@ def revenue_by_interval(request, interval):
 
 def volume_per_etf(request):
     volume_per_etf = Transaction.get_volume_per_etf()
-    return JsonResponse(volume_per_etf, safe=False)
+    sorted_volume_per_etf = dict(
+        sorted(volume_per_etf.items(), key=lambda x: x[1], reverse=True)
+    )
+    return JsonResponse(sorted_volume_per_etf, safe=False)
 
 
 def volume_per_client(request):
